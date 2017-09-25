@@ -38,17 +38,17 @@ instance FromJSON Document where
 
 data Template = Template
   { descr :: String
-  , archive :: FilePath
+  , location :: FilePath
   } deriving ( Eq, Show )
 instance ToJSON Template where
   toJSON ( Template d a ) = object
     [ "description" .= d
-    , "archive" .= a
+    , "location" .= a
     ]
 instance FromJSON Template where
   parseJSON ( Object o ) = Template
     <$> o .: "description"
-    <*> o .: "archive"
+    <*> o .: "location"
   parseJSON invalid = typeMismatch "Invalid format for template:\n" invalid
 
 data Core

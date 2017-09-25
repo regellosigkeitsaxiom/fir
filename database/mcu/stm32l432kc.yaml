@@ -25,9 +25,9 @@ manuals:
     description: STM32L432KB/KC and STM32L442KC device limitations
 linkers:
 - STM32L432KCUx
-templates: []
-#- description: Blinky for chinese noname module
-#archive: 
+templates:
+- description: Plainest blinky for Nucleo module
+  location: stm32l432kc-nucleo-blink-simple
 help: Most featureful Nucleo module of Arduino-micro compatibles
 startup-code: startup_stm32l432xx.s
 cmsis:
