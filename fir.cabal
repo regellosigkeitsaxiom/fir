@@ -30,3 +30,4 @@ executable fir
                      , bytestring
                      , system-filepath
                      , process
+                     , rainbow

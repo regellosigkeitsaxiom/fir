@@ -1,0 +1,35 @@
+fullname: STM32L432KC
+core: M4
+manuals:
+  reference:
+  - code: EM0394
+    file: EM0394.pdf
+    description: STM32L43xxx STM32L44xxx STM32L45xxx STM32L46xxx reference manual
+  - code: RM0393
+    file: EM0393.pdf
+    description: STM32L4x2 reference manual
+  datasheet:
+  - code: DS11451
+    file: DS11451.pdf
+    description: STM32L432KC datasheet
+  other-documents:
+  - code: DB2638
+    file: DB2638.pdf
+    description: Nucleo-STM32L432KC specification
+  - code: UM1956
+    file: UM1956.pdf
+    description: Nucleo-STM32L432KC manual
+  errata:
+  - code: ES0319
+    file: ES0319.pdf
+    description: STM32L432KB/KC and STM32L442KC device limitations
+linkers:
+- STM32L432KCUx
+templates: []
+#- description: Blinky for chinese noname module
+#archive: 
+help: Most featureful Nucleo module of Arduino-micro compatibles
+startup-code: startup_stm32l432xx.s
+cmsis:
+  - stm32l432xx.h
+define: STM32L432xx

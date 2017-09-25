@@ -11,3 +11,6 @@ dist
 result
 tags
 .~lock*
+.fir.yaml
+cabal.sandbox.config
+.cabal-sandbox

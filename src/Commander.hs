@@ -8,7 +8,13 @@ import System.Environment ( getExecutablePath )
 import Filesystem.Path.CurrentOS
 import Filesystem.Path
 import System.Process
-import System.Directory ( createDirectoryIfMissing )
+import System.Directory ( createDirectoryIfMissing, doesFileExist )
+import Control.Monad
+import Rainbow
+import System.IO hiding ( FilePath )
+import Text.Read
+import Data.List
+import Data.Yaml ( encodeFile )
 
 blandFlags :: [ String ]
 blandFlags =
@@ -61,8 +67,10 @@ allFlags mcu info file = do
     [ "-D" ++ define mcu ] ++
     [ "-T" ++ ( addDB db $ "linkers/" ++ linker info ++ ".ld" )] ++
     [ addDB db $ "startups/" ++ startup mcu ] ++
-    [ "-o./build/main.elf" ] ++ --not main!
+    [ "-o./build/" ++ getBaseName file ++ ".elf" ] ++
     [ file ]
+
+getBaseName = encodeString . basename . decodeString
 
 buildELF :: MCU -> DotFir -> String -> IO ()
 buildELF mcu info file = do
@@ -71,17 +79,45 @@ buildELF mcu info file = do
 
 buildBIN :: String -> IO ()
 buildBIN file = do
-  let bn = encodeString . basename . decodeString $ file
   callProcess "arm-none-eabi-objcopy"
     [ "-Obinary"
-    , "./build/" ++ bn ++ ".elf"
-    , "./build/" ++ bn ++ ".bin"
+    , "./build/" ++ getBaseName file ++ ".elf"
+    , "./build/" ++ getBaseName file ++ ".bin"
     ]
 
 builder :: String -> IO ()
 builder file = do
-  info <- ( either undefined id ) <$> getInfo
+  info <- either undefined id <$> getInfo --FIXME
   dbmcu <- patchDB "mcu"
-  mcu <- head <$> readAllMCU dbmcu
+  mcu <- head <$> readAllMCU dbmcu --FIXME
   buildELF mcu info file
   buildBIN file
+
+setter :: IO ()
+setter = do
+  que <- doesFileExist ".fir.yaml"
+  dbmcu <- patchDB "mcu"
+  mcus <- readAllMCU dbmcu
+  putStrLn "Select target MCU (only shown are available):"
+  target <- pickBy fullname mcus
+  case length $ linkers target of
+    0 -> error "No linkers in MCU specification, aborting"
+    1 -> encodeFile ".fir.yaml" $ DotFir ( fullname target ) ( head $ linkers target )
+    _ -> do
+      putStrLn "Multiple linkers are available. Please select one:"
+      linker <- pickBy id $ linkers target
+      encodeFile ".fir.yaml" $ DotFir ( fullname target ) linker
+  
+pickBy :: ( a -> String ) -> [ a ] -> IO a
+pickBy f variants = do
+  mapM_ printOne $ zip [1..] $ map f variants
+  hFlush stdout
+  choice <- getLine
+  return $ case readMaybe choice :: Maybe Int of
+    Just n -> if length variants >= n then variants !! (n-1) else error "Too big number, aborting"
+    Nothing -> error "Invalid input, aborting"
+  where
+  printOne :: ( Int, String ) -> IO ()
+  printOne (ix,var) = do
+    putChunk $ bold $ chunk ( show ix ) & back black & fore red
+    putChunkLn $ chunk ( take ( 3 - length ( show ix )) ( repeat ' ' ) ++ var ) & back black & fore white

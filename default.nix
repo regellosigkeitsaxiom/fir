@@ -1,5 +1,5 @@
 { mkDerivation, aeson, base, bytestring, directory, mtl, process
-, stdenv, system-filepath, yaml
+, rainbow, stdenv, system-filepath, yaml
 }:
 mkDerivation {
   pname = "fir";
@@ -8,7 +8,8 @@ mkDerivation {
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
-    aeson base bytestring directory mtl process system-filepath yaml
+    aeson base bytestring directory mtl process rainbow system-filepath
+    yaml
   ];
   homepage = "https://github.com/regellosigkeitsaxiom/fir#readme";
   license = stdenv.lib.licenses.bsd3;

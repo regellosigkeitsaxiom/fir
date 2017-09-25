@@ -9,6 +9,7 @@ main = do
   args <- getArgs
   print args
   case args of
-    ["info"] -> showCurrentInfo
-    [ file ] -> builder file
+    ["build"] -> builder "main.c"
+    ["build",file] -> builder file
+    ["init"] -> setter
     _ -> putStrLn "Not implemented yet"
