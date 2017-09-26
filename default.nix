@@ -2,7 +2,7 @@
 
 let
   inherit (pkgs) haskell;
-  example = pkgs.haskellPackages.callPackage ./. {};
+  example = pkgs.haskellPackages.callPackage ./auto.nix {};
 
   addRuntimeDependency = drv: x: addRuntimeDependencies drv x;
   addRuntimeDependencies = drv: xs: haskell.lib.overrideCabal drv (drv: {
