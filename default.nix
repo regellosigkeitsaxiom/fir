@@ -1,16 +1,21 @@
-{ mkDerivation, aeson, base, bytestring, directory, mtl, process
-, rainbow, stdenv, system-filepath, yaml
-}:
-mkDerivation {
-  pname = "fir";
-  version = "0.1.0.0";
-  src = ./.;
-  isLibrary = false;
-  isExecutable = true;
-  executableHaskellDepends = [
-    aeson base bytestring directory mtl process rainbow system-filepath
-    yaml
-  ];
-  homepage = "https://github.com/regellosigkeitsaxiom/fir#readme";
-  license = stdenv.lib.licenses.bsd3;
-}
+{ pkgs ? import <nixpkgs> {} }:
+
+let
+  inherit (pkgs) haskell;
+  example = pkgs.haskellPackages.callPackage ./. {};
+
+  addRuntimeDependency = drv: x: addRuntimeDependencies drv x;
+  addRuntimeDependencies = drv: xs: haskell.lib.overrideCabal drv (drv: {
+    buildDepends = (drv.buildDepends or []) ++ [ pkgs.makeWrapper ];
+    postInstall = ''
+      cp -r database $out/
+      ${drv.postInstall or ""}
+      for exe in "$out/bin/"* ; do
+        wrapProgram "$exe" --prefix PATH ":" \
+          ${pkgs.lib.makeBinPath xs}
+      done
+    '';
+  });
+  deps = with pkgs; [ gcc-arm-embedded ];
+
+in addRuntimeDependency example deps
