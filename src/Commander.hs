@@ -15,6 +15,7 @@ import System.IO hiding ( FilePath )
 import Text.Read
 import Data.List
 import Data.Yaml ( encodeFile )
+import Data.Maybe
 
 blandFlags :: [ String ]
 blandFlags =
@@ -85,11 +86,14 @@ buildBIN file = do
     , "./build/" ++ getBaseName file ++ ".bin"
     ]
 
+findMCU :: DotFir -> [ MCU ] -> Maybe MCU
+findMCU fir mcus = find (\x -> fullname x == model fir ) mcus
+
 builder :: String -> IO ()
 builder file = do
   info <- either undefined id <$> getInfo --FIXME
   dbmcu <- patchDB "mcu"
-  mcu <- head <$> readAllMCU dbmcu --FIXME
+  mcu <- fromMaybe undefined . findMCU info <$> readAllMCU dbmcu --FIXME
   buildELF mcu info file
   buildBIN file
 
