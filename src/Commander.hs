@@ -94,7 +94,6 @@ builder file = do
   info <- either undefined id <$> getInfo --FIXME
   dbmcu <- patchDB "mcu"
   mcu <- fromMaybe undefined . findMCU info <$> readAllMCU dbmcu --FIXME
-  print mcu
   buildELF mcu info file
   buildBIN file
 

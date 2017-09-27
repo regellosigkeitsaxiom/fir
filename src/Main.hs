@@ -15,4 +15,11 @@ main = do
     --["flash"] -> undefined
     --["all"] -> undefined
     ["help"] -> helpDoc
+    [] -> do
+      putStrLn "config > remotes | options | init"
+      putStrLn "help"
+      putStrLn "build"
+      putStrLn "flash"
+      putStrLn "all"
+      putStrLn "init (should ask for templates)"
     _ -> putStrLn "Not implemented yet"
