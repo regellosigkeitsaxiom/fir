@@ -10,6 +10,8 @@ import Data.Maybe
 import Commander
 import Text.Read
 import System.Process
+import Data.Yaml
+import System.Directory
 
 data HelpMe
   = HelpLibrary FilePath
@@ -31,7 +33,7 @@ listAvailableHelp mcu = do
   case readMaybe i :: Maybe Int of
     Just j ->
       if | j > x1+x2+x3+x4 || j <= 0 -> undefined
-         | otherwise -> return $ HelpDocument . file $ ( (\f-> f $ manuals mcu ) =<< [ reference, datasheet, errata, other ] ) !! j
+         | otherwise -> return $ HelpDocument . file $ ( (\f-> f $ manuals mcu ) =<< [ reference, datasheet, errata, other ] ) !! (j-1)
     Nothing -> undefined
 
 makeSelector :: Int -> [ Document ] -> IO ()
@@ -51,8 +53,16 @@ helpDoc = do
   dbmcu <- patchDB "mcu"
   mcu <- fromMaybe undefined . findMCU info <$> readAllMCU dbmcu --FIXME
   help <- listAvailableHelp mcu
-  callHelp help
+  home <- getHomeDirectory
+  cfg <- withCurrentDirectory home $ decodeFileEither ".firrc.yaml"
+  case cfg of
+    Left err -> error $ show err
+    Right c -> callHelp help c
 
-callHelp :: HelpMe -> IO ()
-callHelp ( HelpLibrary f ) = undefined
-callHelp ( HelpDocument f ) = undefined
+callHelp :: HelpMe -> FirConfig -> IO ()
+callHelp ( HelpLibrary f ) cfg = undefined
+callHelp ( HelpDocument f ) cfg = do
+  dbdoc <- patchDB "documents"
+  let file = dbdoc ++ "/" ++ f
+  print file
+  callProcess ( pdfReader cfg ) [ file ]
