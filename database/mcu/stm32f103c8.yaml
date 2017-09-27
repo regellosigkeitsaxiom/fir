@@ -1,0 +1,26 @@
+fullname: STM32F103C8
+core: M3
+manuals:
+  reference:
+  - code: RM0008
+    file: RM0008.pdf
+    description: STM32F10[12357]xx reference manual
+  datasheet:
+  - file: DS5319.pdf
+    code: DS5319
+    description: STM32F103x[8B] datasheet
+  other-documents: []
+  errata:
+  - code: ES096
+    file: ES096.pdf
+    description: STM32F10xx[8B] errata sheet
+linkers:
+- STM32F103XB
+templates:
+- description: Bluepill blinky
+  location: stm32f103c8-bluepill-blinky
+help: Cheapest and simplest STM32 microcontroller
+startup-code: startup_stm32f103xb.s
+cmsis:
+  - stm32f103xb.h
+define: STM32F103xB
