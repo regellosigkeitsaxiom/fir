@@ -9,6 +9,7 @@ import Info
 import Data.Maybe
 import Commander
 import Text.Read
+import System.Process
 
 data HelpMe
   = HelpLibrary FilePath
@@ -17,7 +18,7 @@ data HelpMe
 
 listAvailableHelp :: MCU -> IO HelpMe
 listAvailableHelp mcu = do
-  putStrLn "Avaliable reference manuals: "
+  putStrLn "Related documents: "
   let x1 = length $ reference $ manuals mcu
   let x2 = length $ datasheet $ manuals mcu
   let x3 = length $ errata    $ manuals mcu
@@ -37,9 +38,13 @@ makeSelector :: Int -> [ Document ] -> IO ()
 makeSelector ix li = mapM_ makeOpt $ zip [ix..] li
   where
   makeOpt :: ( Int, Document ) -> IO ()
-  makeOpt (i,a) = putStrLn $ ( show i ) ++
-    ( take ( 3 - ( length $ show i )) "   " ) ++
-    ( fromMaybe ( file a ) ( code a ) ++ " | " ++ description a )
+  makeOpt (i,a) = putStrLn $ show i
+    ++ ( pad 3 i )
+    ++ fromMaybe ( file a ) ( code a )
+    ++ pad 13 (code a)
+    ++ " | "
+    ++ description a
+  pad n x = take ( n - ( length $ show x )) $ repeat ' '
 
 helpDoc = do
   info <- either undefined id <$> getInfo --FIXME
