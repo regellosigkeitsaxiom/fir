@@ -4,7 +4,7 @@ manuals:
   reference:
   - code: EM0394
     file: EM0394.pdf
-    description: STM32L43xxx STM32L44xxx STM32L45xxx STM32L46xxx reference manual
+    description: STM32L4[3456]x reference manual
   - code: RM0393
     file: EM0393.pdf
     description: STM32L4x2 reference manual
