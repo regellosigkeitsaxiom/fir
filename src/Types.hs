@@ -5,19 +5,6 @@ import Data.Yaml
 import Data.Aeson.Types ( typeMismatch, Value )
 import Data.Maybe ( maybeToList )
 
-data FlashPoint
-  = Local
-    { command_fpl :: String
-    , name_fpl :: String
-    }
-  | Remote
-    { keyLocation :: String
-    , port :: Int                     
-    , command_fpr :: String
-    , name_fpr :: String
-    }
-  deriving ( Eq, Show )
-
 data Document = Document
   { code :: Maybe String
   , file :: FilePath

@@ -6,7 +6,7 @@ manuals:
     file: EM0394.pdf
     description: STM32L4[3456]x reference manual
   - code: RM0393
-    file: EM0393.pdf
+    file: RM0393.pdf
     description: STM32L4x2 reference manual
   datasheet:
   - code: DS11451
@@ -19,6 +19,9 @@ manuals:
   - code: UM1956
     file: UM1956.pdf
     description: Nucleo-STM32L432KC manual
+  - code: UM1734
+    file: UM1734.pdf
+    description: STM32Cube USB device library manual
   errata:
   - code: ES0319
     file: ES0319.pdf

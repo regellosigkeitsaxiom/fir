@@ -3,6 +3,7 @@ module Commander where
 import Types
 import Info
 import MCU
+import Config
 import Prelude hiding ( FilePath )
 import System.Environment ( getExecutablePath )
 import Filesystem.Path.CurrentOS
@@ -16,12 +17,14 @@ import Text.Read
 import Data.List
 import Data.Yaml ( encodeFile )
 import Data.Maybe
+import Safe
 
 blandFlags :: [ String ]
 blandFlags =
   [ "-mthumb"
   , "--specs=nosys.specs"
   , "-Wl,--gc-sections"
+  --, "-fstack-usage"
   ]
 
 coreFlag :: MCU -> String
@@ -47,7 +50,6 @@ includeFlag = do
   dirs = map decodeString
     [ "CMSIS"
     , "HAL"
-    , "mcu"
     ]
 
 patchDB :: String -> IO String
@@ -125,3 +127,19 @@ pickBy f variants = do
   printOne (ix,var) = do
     putChunk $ bold $ chunk ( show ix ) & back black & fore red
     putChunkLn $ chunk ( take ( 3 - length ( show ix )) ( repeat ' ' ) ++ var ) & back black & fore white
+
+flashWrapper :: Maybe String -> Maybe String -> IO ()
+flashWrapper point file = do
+  info <- getFirConfig
+  flasher info point file
+
+flasher :: FirConfig -> Maybe String -> Maybe String -> IO ()
+flasher fc pointName binary = do
+  let que = (\p -> find (\x -> name x == p ) $ flashPoints fc ) =<< pointName
+  case que of
+    Nothing -> error "Pick flashpoint from available"
+    Just fp -> flash fp ( fromMaybe "main.bin" binary )
+  where
+  flash :: FlashPoint -> String -> IO ()
+  flash fp file = callProcess ( fromMaybe "st-flash" $ command fp )
+    [ "--reset", "write", "build/" ++ file, "0x8000000" ]

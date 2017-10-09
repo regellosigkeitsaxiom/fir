@@ -33,3 +33,4 @@ executable fir
                      , system-filepath
                      , process
                      , rainbow
+                     , safe

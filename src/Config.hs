@@ -23,7 +23,7 @@ data FlashPoint = FlashPoint
 
 data FirConfig = FirConfig
   { pdfReader
-  , cmsisReaded :: String 
+  , cmsisReader :: String 
   , flashPoints :: [ FlashPoint ]
   } deriving ( Show )
 

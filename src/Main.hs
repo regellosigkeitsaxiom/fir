@@ -4,6 +4,7 @@ import Info
 import Commander
 import Help
 import System.Environment ( getArgs )
+import Safe
 
 main :: IO ()
 main = do
@@ -22,4 +23,6 @@ main = do
       putStrLn "flash"
       putStrLn "all"
       putStrLn "init (should ask for templates)"
+    ("flash":rest) ->
+      flashWrapper ( atMay rest 0 ) ( atMay rest 1 )
     _ -> putStrLn "Not implemented yet"
