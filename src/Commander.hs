@@ -128,6 +128,12 @@ pickBy f variants = do
     putChunk $ bold $ chunk ( show ix ) & back black & fore red
     putChunkLn $ chunk ( take ( 3 - length ( show ix )) ( repeat ' ' ) ++ var ) & back black & fore white
 
+allWrapper :: Maybe String -> IO ()
+allWrapper point = do
+  info <- getFirConfig
+  builder "main.c"
+  flasher info point Nothing
+
 flashWrapper :: Maybe String -> Maybe String -> IO ()
 flashWrapper point file = do
   info <- getFirConfig
@@ -138,8 +144,28 @@ flasher fc pointName binary = do
   let que = (\p -> find (\x -> name x == p ) $ flashPoints fc ) =<< pointName
   case que of
     Nothing -> error "Pick flashpoint from available"
-    Just fp -> flash fp ( fromMaybe "main.bin" binary )
+    Just fp -> case ssh fp of
+      Nothing -> flashLocal fp "main.bin"
+      Just sshe -> flashRemote sshe ( command fp ) "main.bin"
+
+flashLocal :: FlashPoint -> String -> IO ()
+flashLocal fp file = callProcess ( fromMaybe "st-flash" $ command fp )
+  [ "write", "build/" ++ file, "0x8000000" ]
   where
-  flash :: FlashPoint -> String -> IO ()
-  flash fp file = callProcess ( fromMaybe "st-flash" $ command fp )
-    [ "--reset", "write", "build/" ++ file, "0x8000000" ]
+
+flashRemote :: SSHEntry -> Maybe String -> String -> IO ()
+flashRemote e flashCom file = do
+  putStrLn $ "scp -P" ++ port e ++ " -i" ++ key e ++ " build/" ++ file ++ " " ++ user e ++"@" ++ address e ++ ":" ++ "firmware.bin"
+  callProcess "scp"
+    [ "-P" ++ port e
+    , "-i" ++ key e
+    , "build/" ++ file
+    , user e ++ "@" ++ address e ++ ":" ++ "firmware.bin"
+    ]
+  putStrLn $ "ssh -p" ++ port e ++ " -i" ++ key e ++ " " ++ user e ++"@" ++ address e ++ " " ++ fromMaybe "st-flash" flashCom ++ " write firmware.bin 0x8000000"
+  callProcess "ssh"
+    [ "-p" ++ port e
+    , "-i" ++ key e
+    , user e ++ "@" ++ address e
+    , fromMaybe "st-flash" flashCom ++ " write firmware.bin 0x8000000" 
+    ]

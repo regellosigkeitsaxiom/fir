@@ -93,4 +93,5 @@ callHelp ( HelpLibrary f ) cfg = do
 callHelp ( HelpDocument f ) cfg = do
   dbdoc <- patchDB "documents"
   let file = dbdoc ++ "/" ++ f
-  callProcess ( pdfReader cfg ) [ file ]
+  spawnProcess ( pdfReader cfg ) [ file ]
+  return ()
