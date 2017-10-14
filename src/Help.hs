@@ -20,6 +20,13 @@ data HelpMe
   | HelpDocument FilePath
   deriving ( Show )
 
+pickCore :: Core -> FilePath
+pickCore CortexM0 = "core_cm0.h"
+pickCore CortexM0plus = "core_cm0plus.h"
+pickCore CortexM3 = "core_cm3.h"
+pickCore CortexM4 = "core_cm4.h"
+pickCore CortexM7 = "core_cm7.h"
+
 listAvailableHelp :: MCU -> IO HelpMe
 listAvailableHelp mcu = do
   putStrLn "Related documents: "
@@ -42,8 +49,8 @@ listAvailableHelp mcu = do
   case readMaybe i :: Maybe Int of
     Just j ->
       if | j >= all+(length $ cmsis mcu)+2 || j <= 0 -> error "Invalid selection"
-         | j >= all && j < all+(length $ cmsis mcu) -> return $ HelpLibrary $ error "CMSIS pick"
-         | j == all+(length $ cmsis mcu) -> return $ HelpLibrary $ error "Core pick"
+         | j >= all && j < all+(length $ cmsis mcu) -> return $ HelpLibrary $ cmsis mcu !! ( j - all )
+         | j == all+(length $ cmsis mcu) -> return $ HelpLibrary $ pickCore $ core mcu
          | j == all+(length $ cmsis mcu)+1 -> return $ HelpStartup $ startup mcu
          | otherwise -> return $ HelpDocument . file $ ( (\f-> f $ manuals mcu ) =<< [ reference, datasheet, errata, other ] ) !! (j-1)
     Nothing -> error "Invalid input"
