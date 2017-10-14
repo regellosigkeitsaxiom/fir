@@ -24,7 +24,11 @@ blandFlags =
   [ "-mthumb"
   , "--specs=nosys.specs"
   , "-Wl,--gc-sections"
+  , "-O2"
+  , "-v"
+  , "-Werror"
   --, "-fstack-usage"
+  --, "-@gcc-options"
   ]
 
 coreFlag :: MCU -> String
