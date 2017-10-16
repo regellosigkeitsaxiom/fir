@@ -18,6 +18,7 @@ data FlashPoint = FlashPoint
   { name
   , path :: String
   , command :: Maybe String
+  , comment :: Maybe String
   , ssh :: Maybe SSHEntry
   } deriving ( Show )
 
@@ -86,13 +87,18 @@ initConfig = do
         "n" -> return Nothing
         "y" -> Just <$> ask "Please enter it: "
         _ -> undefined
-      return [ FlashPoint newName newVer newComm newSSH ]
+      queDescr <- ask "Description, maybe?"
+      descr <- case queDescr of
+        "n" -> return Nothing
+        "y" -> Just <$> ask "Please enter it: "
+        _ -> undefined
+      return [ FlashPoint newName newVer newComm descr newSSH ]
     "n" -> return []
     _ -> undefined
   return $ FirConfig pdfR cmsisR $ here:local:newFPs
   where
-  here = FlashPoint "here" "/dev/stlinkv2_1" Nothing Nothing
-  local = FlashPoint "here" "/dev/disk/by-id/usb-STM32_STM32_STLink-0:0" Nothing Nothing
+  here = FlashPoint "here" "/dev/stlinkv2_1" Nothing (Just "Locally, st-link v2") Nothing
+  local = FlashPoint "local" "/dev/disk/by-id/usb-STM32_STM32_STLink-0:0" Nothing (Just "Locally, st-link v1") Nothing
 
 ask :: String -> IO String
 ask s = do

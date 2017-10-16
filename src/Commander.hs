@@ -146,16 +146,37 @@ flashWrapper point file = do
 flasher :: FirConfig -> Maybe String -> Maybe String -> IO ()
 flasher fc pointName binary = do
   let que = (\p -> find (\x -> name x == p ) $ flashPoints fc ) =<< pointName
-  case que of
-    Nothing -> error "Pick flashpoint from available"
-    Just fp -> case ssh fp of
-      Nothing -> flashLocal fp "main.bin"
-      Just sshe -> flashRemote sshe ( command fp ) "main.bin"
+  fp <- case que of
+    Nothing -> getFP $ flashPoints fc
+    Just fp -> return fp
+  case ssh fp of
+    Nothing -> flashLocal fp "main.bin"
+    Just sshe -> flashRemote sshe ( command fp ) "main.bin"
 
 flashLocal :: FlashPoint -> String -> IO ()
 flashLocal fp file = callProcess ( fromMaybe "st-flash" $ command fp )
   [ "write", "build/" ++ file, "0x8000000" ]
   where
+
+getFP :: [ FlashPoint ] -> IO FlashPoint
+getFP fps = do
+  putStrLn "You did not specify flash point. Please pick one:"
+  mapM_ printFP $ zip [1..] fps
+  hFlush stdout
+  i <- getLine
+  case readMaybe i :: Maybe Int of
+    Nothing -> error "I honestly expected integer. Aborting"
+    Just j ->
+      if j < 1 || j > length fps
+      then error "Number out of range"
+      else return $ fps !! (j-1)
+  where
+  printFP :: ( Int, FlashPoint ) -> IO ()
+  printFP (ix,fp) = do
+    putStr $ show ix ++ "  "
+    putStr $ if isNothing ( ssh fp ) then "" else "[ssh] "
+    putStr $ name fp
+    putStrLn $ fromMaybe "" $ (" // " ++) <$> comment fp
 
 flashRemote :: SSHEntry -> Maybe String -> String -> IO ()
 flashRemote e flashCom file = do
