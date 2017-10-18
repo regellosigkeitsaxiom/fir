@@ -1,10 +1,8 @@
 /**
   ******************************************************************************
-  * @file    stm32_assert.h
+  * @file    stm32l4xx_hal_opamp_ex.h
   * @author  MCD Application Team
-  * @brief   STM32 assert template file.
-  *          This file should be copied to the application folder and renamed
-  *          to stm32_assert.h.
+  * @brief   Header file of OPAMP HAL Extended module.
   ******************************************************************************
   * @attention
   *
@@ -36,38 +34,74 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32_ASSERT_H
-#define __STM32_ASSERT_H
+#ifndef __STM32L4xx_HAL_OPAMP_EX_H
+#define __STM32L4xx_HAL_OPAMP_EX_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif
 
+/* Includes ------------------------------------------------------------------*/
+#include "stm32l4xx_hal_def.h"
+
+/** @addtogroup STM32L4xx_HAL_Driver
+  * @{
+  */
+
+/** @addtogroup OPAMPEx
+  * @{
+  */
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-/* Includes ------------------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
-#ifdef  USE_FULL_ASSERT
-/**
-  * @brief  The assert_param macro is used for function's parameters check.
-  * @param  expr: If expr is false, it calls assert_failed function
-  *         which reports the name of the source file and the source
-  *         line number of the call that failed.
-  *         If expr is true, it returns no value.
-  * @retval None
+/* Exported functions --------------------------------------------------------*/
+/** @addtogroup OPAMPEx_Exported_Functions OPAMPEx Exported Functions
+  * @{
   */
-  #define assert_param(expr) ((expr) ? (void)0U : assert_failed((char *)__FILE__, __LINE__))
-/* Exported functions ------------------------------------------------------- */
-  void assert_failed(char *file, uint32_t line);
-#else
-  #define assert_param(expr) ((void)0U)
-#endif /* USE_FULL_ASSERT */
+
+#if defined (STM32L471xx) || defined (STM32L475xx) || defined (STM32L476xx) || defined (STM32L485xx) || defined (STM32L486xx) || \
+    defined (STM32L496xx) || defined (STM32L4A6xx) || \
+    defined (STM32L4R5xx) || defined (STM32L4R7xx) || defined (STM32L4R9xx) || defined (STM32L4S5xx) || defined (STM32L4S7xx) || defined (STM32L4S9xx)
+    
+
+/* I/O operation functions  *****************************************************/
+/** @addtogroup OPAMPEx_Exported_Functions_Group1 Extended Input and Output operation functions
+  * @{
+  */
+
+HAL_StatusTypeDef HAL_OPAMPEx_SelfCalibrateAll(OPAMP_HandleTypeDef *hopamp1, OPAMP_HandleTypeDef *hopamp2); 
+
+/**
+  * @}
+  */
+#endif
+
+/* Peripheral Control functions  ************************************************/
+/** @addtogroup OPAMPEx_Exported_Functions_Group2
+  * @{
+  */
+HAL_StatusTypeDef HAL_OPAMPEx_Unlock(OPAMP_HandleTypeDef *hopamp); 
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32_ASSERT_H */
 
+#endif /* __STM32L4xx_HAL_OPAMP_EX_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

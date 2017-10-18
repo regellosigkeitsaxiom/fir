@@ -1,10 +1,8 @@
 /**
   ******************************************************************************
-  * @file    stm32_assert.h
+  * @file    stm32l4xx_hal_dfsdm_ex.h
   * @author  MCD Application Team
-  * @brief   STM32 assert template file.
-  *          This file should be copied to the application folder and renamed
-  *          to stm32_assert.h.
+  * @brief   Header file of DFSDM HAL extended module.
   ******************************************************************************
   * @attention
   *
@@ -33,41 +31,79 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32_ASSERT_H
-#define __STM32_ASSERT_H
+#ifndef __STM32L4xx_HAL_DFSDM_EX_H
+#define __STM32L4xx_HAL_DFSDM_EX_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif
 
+#if defined(STM32L4R5xx) || defined(STM32L4R7xx) || defined(STM32L4R9xx) || defined(STM32L4S5xx) || defined(STM32L4S7xx) || defined(STM32L4S9xx)
+
+/* Includes ------------------------------------------------------------------*/
+#include "stm32l4xx_hal_def.h"
+   
+/** @addtogroup STM32L4xx_HAL_Driver
+  * @{
+  */
+
+/** @addtogroup DFSDMEx
+  * @{
+  */
+
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-/* Includes ------------------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-#ifdef  USE_FULL_ASSERT
-/**
-  * @brief  The assert_param macro is used for function's parameters check.
-  * @param  expr: If expr is false, it calls assert_failed function
-  *         which reports the name of the source file and the source
-  *         line number of the call that failed.
-  *         If expr is true, it returns no value.
-  * @retval None
+/* Exported macros -----------------------------------------------------------*/
+/* Exported functions --------------------------------------------------------*/
+
+/** @addtogroup DFSDMEx_Exported_Functions DFSDM Extended Exported Functions
+  * @{
   */
-  #define assert_param(expr) ((expr) ? (void)0U : assert_failed((char *)__FILE__, __LINE__))
-/* Exported functions ------------------------------------------------------- */
-  void assert_failed(char *file, uint32_t line);
-#else
-  #define assert_param(expr) ((void)0U)
-#endif /* USE_FULL_ASSERT */
+
+/** @addtogroup DFSDMEx_Exported_Functions_Group1_Channel Extended channel operation functions
+  * @{
+  */
+
+HAL_StatusTypeDef HAL_DFDSMEx_ChannelSetPulsesSkipping(DFSDM_Channel_HandleTypeDef *hdfsdm_channel, uint32_t PulsesValue);
+HAL_StatusTypeDef HAL_DFDSMEx_ChannelGetPulsesSkipping(DFSDM_Channel_HandleTypeDef *hdfsdm_channel, uint32_t* PulsesValue);
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
+
+/* Private macros ------------------------------------------------------------*/
+
+/** @addtogroup DFSDMEx_Private_Macros DFSDM Extended Private Macros
+  * @{
+  */
+
+#define IS_DFSDM_CHANNEL_SKIPPING_VALUE(VALUE)   ((VALUE) < 64U)
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */
+
+#endif /* STM32L4R5xx || STM32L4R7xx || STM32L4R9xx || STM32L4S5xx || STM32L4S7xx || STM32L4S9xx */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32_ASSERT_H */
-
+#endif /* __STM32L4xx_HAL_DFSDM_EX_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

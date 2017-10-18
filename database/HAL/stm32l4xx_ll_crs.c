@@ -1,10 +1,8 @@
 /**
   ******************************************************************************
-  * @file    stm32_assert.h
+  * @file    stm32l4xx_ll_crs.h
   * @author  MCD Application Team
-  * @brief   STM32 assert template file.
-  *          This file should be copied to the application folder and renamed
-  *          to stm32_assert.h.
+  * @brief   CRS LL module driver.
   ******************************************************************************
   * @attention
   *
@@ -34,40 +32,71 @@
   *
   ******************************************************************************
   */
+#if defined(USE_FULL_LL_DRIVER)
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32_ASSERT_H
-#define __STM32_ASSERT_H
-
-#ifdef __cplusplus
- extern "C" {
-#endif
-
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
 /* Includes ------------------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-#ifdef  USE_FULL_ASSERT
-/**
-  * @brief  The assert_param macro is used for function's parameters check.
-  * @param  expr: If expr is false, it calls assert_failed function
-  *         which reports the name of the source file and the source
-  *         line number of the call that failed.
-  *         If expr is true, it returns no value.
-  * @retval None
+#include "stm32l4xx_ll_crs.h"
+#include "stm32l4xx_ll_bus.h"
+
+/** @addtogroup STM32L4xx_LL_Driver
+  * @{
   */
-  #define assert_param(expr) ((expr) ? (void)0U : assert_failed((char *)__FILE__, __LINE__))
-/* Exported functions ------------------------------------------------------- */
-  void assert_failed(char *file, uint32_t line);
-#else
-  #define assert_param(expr) ((void)0U)
-#endif /* USE_FULL_ASSERT */
 
-#ifdef __cplusplus
+#if defined(CRS)
+
+/** @defgroup CRS_LL CRS
+  * @{
+  */
+
+/* Private types -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+/* Private constants ---------------------------------------------------------*/
+/* Private macros ------------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+
+/* Exported functions --------------------------------------------------------*/
+/** @addtogroup CRS_LL_Exported_Functions
+  * @{
+  */
+
+/** @addtogroup CRS_LL_EF_Init
+  * @{
+  */
+
+/**
+  * @brief  De-Initializes CRS peripheral registers to their default reset values.
+  * @retval An ErrorStatus enumeration value:
+  *          - SUCCESS: CRS registers are de-initialized
+  *          - ERROR: not applicable
+  */
+ErrorStatus LL_CRS_DeInit(void)
+{
+  LL_APB1_GRP1_ForceReset(LL_APB1_GRP1_PERIPH_CRS);
+  LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_CRS);
+
+  return  SUCCESS;
 }
-#endif
 
-#endif /* __STM32_ASSERT_H */
 
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+#endif /* defined(CRS) */
+
+/**
+  * @}
+  */
+  
+#endif /* USE_FULL_LL_DRIVER */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

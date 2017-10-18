@@ -1,10 +1,8 @@
 /**
   ******************************************************************************
-  * @file    stm32_assert.h
+  * @file    stm32l4xx_hal_flash_ramfunc.h
   * @author  MCD Application Team
-  * @brief   STM32 assert template file.
-  *          This file should be copied to the application folder and renamed
-  *          to stm32_assert.h.
+  * @brief   Header file of FLASH RAMFUNC driver.
   ******************************************************************************
   * @attention
   *
@@ -33,41 +31,96 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32_ASSERT_H
-#define __STM32_ASSERT_H
+#ifndef __STM32L4xx_FLASH_RAMFUNC_H
+#define __STM32L4xx_FLASH_RAMFUNC_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
 /* Includes ------------------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-#ifdef  USE_FULL_ASSERT
-/**
-  * @brief  The assert_param macro is used for function's parameters check.
-  * @param  expr: If expr is false, it calls assert_failed function
-  *         which reports the name of the source file and the source
-  *         line number of the call that failed.
-  *         If expr is true, it returns no value.
-  * @retval None
+#include "stm32l4xx_hal_def.h"
+
+/** @addtogroup STM32L4xx_HAL_Driver
+  * @{
   */
-  #define assert_param(expr) ((expr) ? (void)0U : assert_failed((char *)__FILE__, __LINE__))
-/* Exported functions ------------------------------------------------------- */
-  void assert_failed(char *file, uint32_t line);
-#else
-  #define assert_param(expr) ((void)0U)
-#endif /* USE_FULL_ASSERT */
+
+/** @addtogroup FLASH_RAMFUNC
+  * @{
+  */ 
+
+/* Exported types ------------------------------------------------------------*/ 
+/* Exported macro ------------------------------------------------------------*/
+/** 
+  * @brief  __RAM_FUNC definition
+  */ 
+#if defined ( __CC_ARM   )
+/* ARM Compiler
+   ------------
+   RAM functions are defined using the toolchain options. 
+   Functions that are executed in RAM should reside in a separate source module.
+   Using the 'Options for File' dialog you can simply change the 'Code / Const' 
+   area of a module to a memory space in physical RAM.
+   Available memory areas are declared in the 'Target' tab of the 'Options for Target'
+   dialog. 
+*/
+#define __RAM_FUNC HAL_StatusTypeDef 
+
+#elif defined ( __ICCARM__ )
+/* ICCARM Compiler
+   ---------------
+   RAM functions are defined using a specific toolchain keyword "__ramfunc". 
+*/
+#define __RAM_FUNC __ramfunc HAL_StatusTypeDef
+
+#elif defined   (  __GNUC__  )
+/* GNU Compiler
+   ------------
+  RAM functions are defined using a specific toolchain attribute 
+   "__attribute__((section(".RamFunc")))".
+*/
+#define __RAM_FUNC HAL_StatusTypeDef  __attribute__((section(".RamFunc")))
+
+#endif
+                                      
+
+/* Exported functions --------------------------------------------------------*/
+/** @addtogroup FLASH_RAMFUNC_Exported_Functions
+  * @{
+  */
+
+/** @addtogroup FLASH_RAMFUNC_Exported_Functions_Group1
+  * @{
+  */
+/* Peripheral Control functions  ************************************************/
+__RAM_FUNC  HAL_FLASHEx_EnableRunPowerDown(void);
+__RAM_FUNC  HAL_FLASHEx_DisableRunPowerDown(void);
+#if defined (STM32L4R5xx) || defined (STM32L4R7xx) || defined (STM32L4R9xx) || defined (STM32L4S5xx) || defined (STM32L4S7xx) || defined (STM32L4S9xx)
+__RAM_FUNC  HAL_FLASHEx_OB_DBankConfig(uint32_t DBankConfig);
+#endif
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32_ASSERT_H */
-
+#endif /* __STM32L4xx_FLASH_RAMFUNC_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
