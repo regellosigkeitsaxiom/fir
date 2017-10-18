@@ -24,11 +24,6 @@ blandFlags =
   [ "-mthumb"
   , "--specs=nosys.specs"
   , "-Wl,--gc-sections"
-  , "-O2"
-  , "-v"
-  , "-Werror"
-  --, "-fstack-usage"
-  --, "-@gcc-options"
   ]
 
 coreFlag :: MCU -> String
@@ -71,6 +66,7 @@ allFlags mcu info file = do
   flags db =
     [ coreFlag mcu ] ++
     blandFlags ++
+    options info ++
     [ "-D" ++ define mcu ] ++
     [ "-T" ++ ( addDB db $ "linkers/" ++ linker info ++ ".ld" )] ++
     [ addDB db $ "startups/" ++ startup mcu ] ++
@@ -112,11 +108,11 @@ setter = do
   target <- pickBy fullname mcus
   case length $ linkers target of
     0 -> error "No linkers in MCU specification, aborting"
-    1 -> encodeFile ".fir.yaml" $ DotFir ( fullname target ) ( head $ linkers target )
+    1 -> encodeFile ".fir.yaml" $ DotFir ( fullname target ) ( head $ linkers target ) ["-O2", "-Werror"]
     _ -> do
       putStrLn "Multiple linkers are available. Please select one:"
       linker <- pickBy id $ linkers target
-      encodeFile ".fir.yaml" $ DotFir ( fullname target ) linker
+      encodeFile ".fir.yaml" $ DotFir ( fullname target ) linker ["-O2","-Werror"]
   
 pickBy :: ( a -> String ) -> [ a ] -> IO a
 pickBy f variants = do

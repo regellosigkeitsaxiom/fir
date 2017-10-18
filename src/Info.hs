@@ -23,16 +23,19 @@ tryMatch_ state (e:es) (a:as) | elem e ("xX_"::String) = tryMatch_ ( max state P
 data DotFir = DotFir
   { model :: String
   , linker :: String
+  , options :: [ String ]
   } deriving ( Eq, Show )
 instance FromJSON DotFir where
   parseJSON ( Object o ) = DotFir
     <$> o .: "model"
     <*> o .: "linker"
+    <*> o .:? "options" .!= []
   parseJSON invalid = typeMismatch "Invalid .fir.yaml file" invalid
 instance ToJSON DotFir where
-  toJSON ( DotFir m l ) = object
+  toJSON ( DotFir m l o ) = object
     [ "model" .= m
     , "linker" .= l
+    , "options" .= o
     ]
 
 showCurrentInfo :: IO ()
