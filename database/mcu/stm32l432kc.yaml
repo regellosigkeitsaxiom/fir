@@ -31,6 +31,8 @@ linkers:
 templates:
 - description: Plainest blinky for Nucleo module
   location: stm32l432kc-nucleo-blink-simple
+- description: Empty project
+  location: zero
 help: Most featureful Nucleo module of Arduino-micro compatibles
 startup-code: startup_stm32l432xx.s
 cmsis:

@@ -19,6 +19,8 @@ linkers:
 templates:
 - description: Bluepill blinky
   location: stm32f103c8-bluepill-blinky
+- description: Empty project
+  location: zero
 help: Cheapest and simplest STM32 microcontroller
 startup-code: startup_stm32f103xb.s
 cmsis:
