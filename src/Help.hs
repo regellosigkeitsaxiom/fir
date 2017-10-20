@@ -40,9 +40,9 @@ listAvailableHelp mcu = do
   makeSelectorDoc (1+x1+x2) $ errata $ manuals mcu
   makeSelectorDoc (1+x1+x2+x3) $ other $ manuals mcu
   putStrLn "\nRelated libraries and stuff: "
-  makeSelectorLib (all) "NOT YET" "CMSIS library"
-  makeSelectorLib (all+1) ( show $ core mcu ) "Core library"
-  makeSelectorLib (all+2) ( startup mcu ) "Startup file"
+  makeSelectorMany (all) (cmsis mcu) "CMSIS Library"
+  makeSelectorLib (all+length (cmsis mcu)) ( show $ core mcu ) "Core library"
+  makeSelectorLib (all+1+length (cmsis mcu)) ( startup mcu ) "Startup file"
   --makeSelector (all+4) $ "Linker file: " ++ startup mcu
   --makeSelector (all+4) $ "Other libraries: " ++ startup mcu
   i <- getLine
@@ -66,6 +66,12 @@ mkOpt ix name descr = putStrLn $ show ix
   pad n x = take ( n - ( length $ show x )) $ repeat ' '
 
 makeSelectorLib = mkOpt
+
+makeSelectorMany :: Int -> [ String ] -> String -> IO ()
+makeSelectorMany ix li desc = mapM_ makeOpt $ zip [ix..] li
+  where
+  makeOpt :: ( Int, String ) -> IO ()
+  makeOpt (i,a) = mkOpt i a desc
 
 makeSelectorDoc :: Int -> [ Document ] -> IO ()
 makeSelectorDoc ix li = mapM_ makeOpt $ zip [ix..] li
