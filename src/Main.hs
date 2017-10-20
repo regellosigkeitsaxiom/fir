@@ -18,14 +18,6 @@ main = do
     --["flash"] -> undefined
     --["all"] -> undefined
     ["help"] -> helpDoc
-    [] -> do
-      putStrLn "config > remotes | options | init"
-      putStrLn "help"
-      putStrLn "build"
-      putStrLn "flash"
-      putStrLn "all"
-      putStrLn "init (should ask for templates)"
-      putStrLn "remotes"
     ("all":rest) ->
       allWrapper ( atMay rest 0 )
     ("flash":rest) ->
@@ -33,7 +25,14 @@ main = do
     ["remotes"] -> do
       conf <- getFirConfig
       mapM_ printFlashPoint $ flashPoints conf
-    _ -> putStrLn "Not implemented yet"
+    _ -> do
+      putStrLn "help (documentation and libraries)"
+      putStrLn "build [<file>]"
+      putStrLn "flash [<remote> [<file>]]"
+      putStrLn "all [<remote>]"
+      putStrLn "init (will ask for templates)"
+      putStrLn "remotes"
+      putStrLn "anything else prints this message"
 
 printFlashPoint :: FlashPoint -> IO ()
 printFlashPoint fp = do
@@ -47,5 +46,5 @@ printFlashPoint fp = do
       putStrLn $ "Address | " ++ address s
       putStrLn $ "User    | " ++ user s
       putStrLn $ "Port    | " ++ port s
-      putStrLn $ "Key     | " ++ address s
+      putStrLn $ "Key     | " ++ key s
   putStrLn ""

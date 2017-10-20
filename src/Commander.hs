@@ -9,7 +9,7 @@ import System.Environment ( getExecutablePath )
 import Filesystem.Path.CurrentOS
 import Filesystem.Path
 import System.Process
-import System.Directory ( createDirectoryIfMissing, doesFileExist )
+import System.Directory ( createDirectoryIfMissing, doesFileExist, listDirectory, copyFile )
 import Control.Monad
 import Rainbow
 import System.IO hiding ( FilePath )
@@ -102,17 +102,33 @@ builder file = do
 setter :: IO ()
 setter = do
   que <- doesFileExist ".fir.yaml"
-  dbmcu <- patchDB "mcu"
-  mcus <- readAllMCU dbmcu
-  putStrLn "Select target MCU (only shown are available):"
-  target <- pickBy fullname mcus
-  case length $ linkers target of
-    0 -> error "No linkers in MCU specification, aborting"
-    1 -> encodeFile ".fir.yaml" $ DotFir ( fullname target ) ( head $ linkers target ) ["-O2", "-Werror"]
-    _ -> do
-      putStrLn "Multiple linkers are available. Please select one:"
-      linker <- pickBy id $ linkers target
-      encodeFile ".fir.yaml" $ DotFir ( fullname target ) linker ["-O2","-Werror"]
+  if que
+  then error "You already have .fir.yaml, I don't know how to proceed" --Should propose template
+  else do
+    dbmcu <- patchDB "mcu"
+    mcus <- readAllMCU dbmcu
+    putStrLn "Select target MCU (only shown are available):"
+    target <- pickBy fullname mcus
+    case length $ linkers target of
+      0 -> error "No linkers in MCU specification, aborting"
+      1 -> encodeFile ".fir.yaml" $ DotFir ( fullname target ) ( head $ linkers target ) ["-O2", "-Werror"]
+      _ -> do
+        putStrLn "Multiple linkers are available. Please select one:"
+        linker <- pickBy id $ linkers target
+        encodeFile ".fir.yaml" $ DotFir ( fullname target ) linker ["-O2","-Werror"]
+    if length ( templates target ) > 0
+    then do
+      dir <- listDirectory "."
+      if length dir > 1
+      then putStrLn "I see you have some stuff here, so I won't bug you with templates"
+      else do
+        putStrLn "\nI see you have empty directory here. A have some templates available:"
+        templ <- pickBy descr $ templates target
+        dbTemplates <- patchDB $ "examples/" ++ location templ
+        templateFiles <- filter (\x->x /= ".fir.yaml") <$> listDirectory dbTemplates
+        mapM_ (\x -> copyFile ( dbTemplates ++ "/" ++ x ) x ) templateFiles
+        putStrLn "Example copied to current directory"
+    else putStrLn "I don't have templates for this MCU, so I'm done here"
   
 pickBy :: ( a -> String ) -> [ a ] -> IO a
 pickBy f variants = do
