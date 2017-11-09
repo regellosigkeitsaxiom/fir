@@ -1,0 +1,26 @@
+fullname: STM32L476RG
+core: M4
+manuals:
+  reference:
+  - code: RM0351
+    file: RM0351.pdf
+    description: STM32L4x5 and STM32L4x6 reference manual
+  datasheet:
+  - code: DS10198
+    file: DS10198.pdf
+    description: STM32L476xx datasheet
+  other-documents: []
+  errata:
+  - code: PM0214
+    file: PM0214.pdf
+    description: STM32L476xx/STM32L486xx device limitations
+linkers:
+- STM32L476RGTx
+templates:
+- description: Empty project
+  location: zero
+help: Not-so-little brother of STM32L486. Also a Nucleo.
+startup-code: startup_stm32l476xx.s
+cmsis:
+  - stm32l476xx.h
+define: STM32L476xx
