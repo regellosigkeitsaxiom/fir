@@ -16,7 +16,7 @@ tryMatch_ :: Match -> String -> String -> Match
 tryMatch_ state [] [] = state
 tryMatch_ state [] _ = max state Partial
 tryMatch_ _ _ [] = NoMatch
-tryMatch_ state (e:es) (a:as) | elem e ("xX_"::String) = tryMatch_ ( max state Partial ) es as
+tryMatch_ state (e:es) (a:as) | e `elem` ("xX_"::String) = tryMatch_ ( max state Partial ) es as
                               | toLower e == toLower a = tryMatch_ state es as
                               | otherwise = NoMatch
 
@@ -44,11 +44,10 @@ showCurrentInfo = getInfo >>= print
 getInfo :: IO ( Either String DotFir )
 getInfo = do
   que <- doesFileExist ".fir.yaml"
-  case que of
-    False -> return $ Left ".fir.yaml does not exist.\nMaybe you want to create one with `fir init`?"
-    True -> do
-      dotfir <- decodeEither <$> BS.readFile ".fir.yaml"
-      case ( dotfir :: Either String DotFir ) of
-        Left e -> return $ Left $ "Error while reading .fir.yaml file:\n" ++ e
-        Right fir -> do
-          return dotfir
+  if que
+  then return $ Left ".fir.yaml does not exist.\nMaybe you want to create one with `fir init`?"
+  else do
+    dotfir <- decodeEither <$> BS.readFile ".fir.yaml"
+    case ( dotfir :: Either String DotFir ) of
+      Left e -> return $ Left $ "Error while reading .fir.yaml file:\n" ++ e
+      Right fir -> return dotfir

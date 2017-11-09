@@ -48,22 +48,22 @@ listAvailableHelp mcu = do
   i <- getLine
   case readMaybe i :: Maybe Int of
     Just j ->
-      if | j >= all+(length $ cmsis mcu)+2 || j <= 0 -> error "Invalid selection"
-         | j >= all && j < all+(length $ cmsis mcu) -> return $ HelpLibrary $ cmsis mcu !! ( j - all )
-         | j == all+(length $ cmsis mcu) -> return $ HelpLibrary $ pickCore $ core mcu
-         | j == all+(length $ cmsis mcu)+1 -> return $ HelpStartup $ startup mcu
+      if | j >= all+length (cmsis mcu)+2 || j <= 0 -> error "Invalid selection"
+         | j >= all && j < all+length (cmsis mcu) -> return $ HelpLibrary $ cmsis mcu !! ( j - all )
+         | j == all+length (cmsis mcu) -> return $ HelpLibrary $ pickCore $ core mcu
+         | j == all+length (cmsis mcu)+1 -> return $ HelpStartup $ startup mcu
          | otherwise -> return $ HelpDocument . file $ ( (\f-> f $ manuals mcu ) =<< [ reference, datasheet, errata, other ] ) !! (j-1)
     Nothing -> error "Invalid input"
 
 mkOpt :: Int -> String -> String -> IO ()
 mkOpt ix name descr = putStrLn $ show ix
-  ++ ( pad 3 ix )
+  ++ pad 3 ix
   ++ name
   ++ pad 23 name
   ++ " | "
   ++ descr
   where
-  pad n x = take ( n - ( length $ show x )) $ repeat ' '
+  pad n x = replicate ( n - length ( show x )) ' '
 
 makeSelectorLib = mkOpt
 

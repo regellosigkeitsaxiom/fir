@@ -42,7 +42,7 @@ printFlashPoint fp = do
   case ssh fp of
     Nothing -> putStrLn "SSH     | NONE"
     Just s -> do
-      putStrLn $ "SSH:"
+      putStrLn   "SSH:"
       putStrLn $ "Address | " ++ address s
       putStrLn $ "User    | " ++ user s
       putStrLn $ "Port    | " ++ port s

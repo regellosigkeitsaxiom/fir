@@ -6,10 +6,19 @@ import MCU
 import Config
 import Prelude hiding ( FilePath )
 import System.Environment ( getExecutablePath )
-import Filesystem.Path.CurrentOS
-import Filesystem.Path
+import Filesystem.Path.CurrentOS hiding ( null )
+import Filesystem.Path hiding ( null )
 import System.Process
-import System.Directory ( createDirectoryIfMissing, doesFileExist, listDirectory, copyFile )
+import System.Directory
+  ( createDirectoryIfMissing
+  , doesFileExist
+  , listDirectory
+  , copyFile
+  , readable
+  , writable
+  , setPermissions
+  , getPermissions
+  )
 import Control.Monad
 import Rainbow
 import System.IO hiding ( FilePath )
@@ -48,7 +57,7 @@ includeFlag = do
   where
   dirs = map decodeString
     [ "CMSIS"
-    , "HAL"
+    --, "HAL"
     ]
 
 patchDB :: String -> IO String
@@ -68,7 +77,7 @@ allFlags mcu info file = do
     blandFlags ++
     options info ++
     [ "-D" ++ define mcu ] ++
-    [ "-T" ++ ( addDB db $ "linkers/" ++ linker info ++ ".ld" )] ++
+    [ "-T" ++ addDB db ( "linkers/" ++ linker info ++ ".ld" )] ++
     [ addDB db $ "startups/" ++ startup mcu ] ++
     [ "-o./build/" ++ getBaseName file ++ ".elf" ] ++
     [ file ]
@@ -81,7 +90,7 @@ buildELF mcu info file = do
   callProcess "arm-none-eabi-gcc" =<< allFlags mcu info file
 
 buildBIN :: String -> IO ()
-buildBIN file = do
+buildBIN file =
   callProcess "arm-none-eabi-objcopy"
     [ "-Obinary"
     , "./build/" ++ getBaseName file ++ ".elf"
@@ -89,7 +98,7 @@ buildBIN file = do
     ]
 
 findMCU :: DotFir -> [ MCU ] -> Maybe MCU
-findMCU fir mcus = find (\x -> fullname x == model fir ) mcus
+findMCU fir = find (\x -> fullname x == model fir )
 
 builder :: String -> IO ()
 builder file = do
@@ -116,7 +125,7 @@ setter = do
         putStrLn "Multiple linkers are available. Please select one:"
         linker <- pickBy id $ linkers target
         encodeFile ".fir.yaml" $ DotFir ( fullname target ) linker ["-O2","-Werror"]
-    if length ( templates target ) > 0
+    if not . null $ templates target
     then do
       dir <- listDirectory "."
       if length dir > 1
@@ -125,10 +134,15 @@ setter = do
         putStrLn "\nI see you have empty directory here. A have some templates available:"
         templ <- pickBy descr $ templates target
         dbTemplates <- patchDB $ "examples/" ++ location templ
-        templateFiles <- filter (\x->x /= ".fir.yaml") <$> listDirectory dbTemplates
-        mapM_ (\x -> copyFile ( dbTemplates ++ "/" ++ x ) x ) templateFiles
+        templateFiles <- filter (/= ".fir.yaml") <$> listDirectory dbTemplates
+        mapM_ ( copyWritable dbTemplates ) templateFiles
         putStrLn "Example copied to current directory"
     else putStrLn "I don't have templates for this MCU, so I'm done here"
+    where
+    copyWritable templ x = do
+      copyFile ( templ ++ "/" ++ x ) x
+      p <- getPermissions x
+      setPermissions x $ p { readable = True, writable = True }
   
 pickBy :: ( a -> String ) -> [ a ] -> IO a
 pickBy f variants = do
@@ -142,7 +156,7 @@ pickBy f variants = do
   printOne :: ( Int, String ) -> IO ()
   printOne (ix,var) = do
     putChunk $ bold $ chunk ( show ix ) & back black & fore red
-    putChunkLn $ chunk ( take ( 3 - length ( show ix )) ( repeat ' ' ) ++ var ) & back black & fore white
+    putChunkLn $ chunk ( replicate ( 3 - length ( show ix )) ' ' ++ var ) & back black & fore white
 
 allWrapper :: Maybe String -> IO ()
 allWrapper point = do
@@ -168,7 +182,6 @@ flasher fc pointName binary = do
 flashLocal :: FlashPoint -> String -> IO ()
 flashLocal fp file = callProcess ( fromMaybe "st-flash" $ command fp )
   [ "write", "build/" ++ file, "0x8000000" ]
-  where
 
 getFP :: [ FlashPoint ] -> IO FlashPoint
 getFP fps = do

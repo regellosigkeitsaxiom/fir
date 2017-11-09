@@ -36,20 +36,20 @@ getFirConfig :: IO FirConfig
 getFirConfig = do
   home <- getHomeDirectory
   z <- withCurrentDirectory home $ doesFileExist ".firrc.yaml"
-  case z of
-    True -> do
-      try <- withCurrentDirectory home $ decodeFile ".firrc.yaml"
-      case try of
-        Just x -> return x
-        Nothing -> error "Could not read ~/.firrc.yaml"
-    False -> do
-      que <- ask "Config ~/.firrc.yaml not found. I can create template with you. Go? "     
-      case que of
-        "y" -> do
-          newFC <- initConfig
-          home <- getHomeDirectory
-          writeConfig newFC
-          return newFC
+  if z
+  then do
+    try <- withCurrentDirectory home $ decodeFile ".firrc.yaml"
+    case try of
+      Just x -> return x
+      Nothing -> error "Could not read ~/.firrc.yaml"
+  else do
+    que <- ask "Config ~/.firrc.yaml not found. I can create template with you. Go? "     
+    case que of
+      "y" -> do
+        newFC <- initConfig
+        home <- getHomeDirectory
+        writeConfig newFC
+        return newFC
           
 
 writeConfig :: FirConfig -> IO ()
