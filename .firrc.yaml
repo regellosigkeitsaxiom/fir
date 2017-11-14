@@ -1,0 +1,25 @@
+pdfReader: acroread
+CMSISReader: vim
+flashPoints:
+  - name: local
+    path: /dev/disk/by-id/usb-STM32_STM32_STLink-0:0
+    description: Locally via ST-Link v1 (e.g. STM32VLDiscovery)
+  - name: here
+    description: Locally voa ST-Link v2
+  - name: solder
+    path: /dev/stlinkv1_4
+    command: ~/stlink/build/Release/st-flash
+    description: Home RPi, ST-Link v1
+    ssh:
+      address: 192.168.23.8
+      key: ~/.ssh/valentin.spybox.key
+      port: 22
+      user: stm32
+  - name: folder
+    command: ~/stlink/build/Release/st-flash
+    description: Home RPi, ST-Link v2
+    ssh:
+      address: 192.168.23.8
+      key: ~/.ssh/valentin.spybox.key
+      port: 22
+      user: stm32

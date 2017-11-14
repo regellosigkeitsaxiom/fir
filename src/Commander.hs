@@ -102,9 +102,9 @@ findMCU fir = find (\x -> fullname x == model fir )
 
 builder :: String -> IO ()
 builder file = do
-  info <- either undefined id <$> getInfo --FIXME
+  info <- either error id <$> getInfo --FIXME
   dbmcu <- patchDB "mcu"
-  mcu <- fromMaybe undefined . findMCU info <$> readAllMCU dbmcu --FIXME
+  mcu <- fromMaybe (error "findMCU failed") . findMCU info <$> readAllMCU dbmcu --FIXME
   buildELF mcu info file
   buildBIN file
 
@@ -176,12 +176,12 @@ flasher fc pointName binary = do
     Nothing -> getFP $ flashPoints fc
     Just fp -> return fp
   case ssh fp of
-    Nothing -> flashLocal fp "main.bin"
-    Just sshe -> flashRemote sshe ( command fp ) "main.bin"
+    Nothing -> flashLocal fp "build/main.bin"
+    Just sshe -> flashRemote sshe ( command fp ) $ fromMaybe "build/main.bin" binary
 
 flashLocal :: FlashPoint -> String -> IO ()
 flashLocal fp file = callProcess ( fromMaybe "st-flash" $ command fp )
-  [ "write", "build/" ++ file, "0x8000000" ]
+  [ "write", {-"build/" ++ -} file, "0x8000000" ]
 
 getFP :: [ FlashPoint ] -> IO FlashPoint
 getFP fps = do
@@ -205,11 +205,11 @@ getFP fps = do
 
 flashRemote :: SSHEntry -> Maybe String -> String -> IO ()
 flashRemote e flashCom file = do
-  putStrLn $ "scp -P" ++ port e ++ " -i" ++ key e ++ " build/" ++ file ++ " " ++ user e ++"@" ++ address e ++ ":" ++ "firmware.bin"
+  putStrLn $ "scp -P" ++ port e ++ " -i" ++ key e ++ " " {- ++ "build/" -} ++ file ++ " " ++ user e ++"@" ++ address e ++ ":" ++ "firmware.bin"
   callProcess "scp"
     [ "-P" ++ port e
     , "-i" ++ key e
-    , "build/" ++ file
+    , {-"build/" ++ -} file
     , user e ++ "@" ++ address e ++ ":" ++ "firmware.bin"
     ]
   putStrLn $ "ssh -p" ++ port e ++ " -i" ++ key e ++ " " ++ user e ++"@" ++ address e ++ " " ++ fromMaybe "st-flash" flashCom ++ " write firmware.bin 0x8000000"

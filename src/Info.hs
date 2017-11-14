@@ -44,7 +44,7 @@ showCurrentInfo = getInfo >>= print
 getInfo :: IO ( Either String DotFir )
 getInfo = do
   que <- doesFileExist ".fir.yaml"
-  if que
+  if not que
   then return $ Left ".fir.yaml does not exist.\nMaybe you want to create one with `fir init`?"
   else do
     dotfir <- decodeEither <$> BS.readFile ".fir.yaml"

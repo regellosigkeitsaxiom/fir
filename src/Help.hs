@@ -80,7 +80,7 @@ makeSelectorDoc ix li = mapM_ makeOpt $ zip [ix..] li
   makeOpt (i,a) = mkOpt i ( fromMaybe (file a) (code a)) (description a)
 
 helpDoc = do
-  info <- either (error ".fir.yaml") id <$> getInfo --FIXME
+  info <- either (error) id <$> getInfo --FIXME
   dbmcu <- patchDB "mcu"
   mcu <- fromMaybe (error "mcu") . findMCU info <$> readAllMCU dbmcu --FIXME
   help <- listAvailableHelp mcu

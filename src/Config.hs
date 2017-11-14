@@ -71,7 +71,7 @@ initConfig = do
       newVer <- case ver of
         "1" -> return "/dev/disk/by-id/usb-STM32_STM32_STLink-0:0"
         "2" -> return "/dev/stlinkv2_1"
-        _ -> undefined
+        _ -> error "Bad input on ST-Link choice"
       yn2 <- ask "Will you use ssh?"
       newSSH <- case yn2 of
         "y" -> do
@@ -81,20 +81,20 @@ initConfig = do
           newUser <- ask "Enter user: "
           return $ Just $ SSHEntry newAddr newKey newUser newPort
         "n" -> return Nothing
-        _ -> undefined
+        _ -> error "Bad input on SSH selection"
       yn3 <- ask "Will it use custom flash command? "
       newComm <- case yn3 of
         "n" -> return Nothing
         "y" -> Just <$> ask "Please enter it: "
-        _ -> undefined
+        _ -> error "Bad input on custom command selection"
       queDescr <- ask "Description, maybe?"
       descr <- case queDescr of
         "n" -> return Nothing
         "y" -> Just <$> ask "Please enter it: "
-        _ -> undefined
+        _ -> error "Bad input on descriotion dialogue"
       return [ FlashPoint newName newVer newComm descr newSSH ]
     "n" -> return []
-    _ -> undefined
+    _ -> error "Bad input on flashpoint creation selector"
   return $ FirConfig pdfR cmsisR $ here:local:newFPs
   where
   here = FlashPoint "here" "/dev/stlinkv2_1" Nothing (Just "Locally, st-link v2") Nothing
