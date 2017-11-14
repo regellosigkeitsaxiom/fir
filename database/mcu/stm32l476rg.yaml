@@ -9,7 +9,10 @@ manuals:
   - code: DS10198
     file: DS10198.pdf
     description: STM32L476xx datasheet
-  other-documents: []
+  other-documents:
+  - code: UM1724
+    file: UM1724.pdf
+    description: Integrated Nucleo-64 board manual
   errata:
   - code: PM0214
     file: PM0214.pdf

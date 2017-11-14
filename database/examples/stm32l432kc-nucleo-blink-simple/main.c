@@ -2,7 +2,7 @@
 #include <core_cm4.h>
 #include "system.c"
 
-void badDelay ( uint32_t x ) {
+void __attribute__((optimize("O0"))) badDelay ( uint32_t x ) {
   while (x--);
 }
 
