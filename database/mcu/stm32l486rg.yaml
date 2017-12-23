@@ -1,0 +1,26 @@
+fullname: STM32L486RG
+core: M4
+manuals:
+  reference:
+  - code: RM0351
+    file: RM0351.pdf
+    description: STM32L4x5 and STM32L4x6 reference manual
+  datasheet:
+  - code: DM00108833
+    file: DM00108833.pdf
+    description: STM32L476xx datasheet (no code)
+  other-documents: []
+  errata:
+  - code: PM0214
+    file: PM0214.pdf
+    description: STM32L476xx/STM32L486xx device limitations
+linkers:
+- STM32L486RGTx
+templates:
+- description: Empty project
+  location: zero
+help: Initial core MCU of ips3 nodes
+startup-code: startup_stm32l486xx.s
+cmsis:
+  - stm32l486xx.h
+define: STM32L486xx

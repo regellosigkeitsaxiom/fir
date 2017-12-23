@@ -25,6 +25,7 @@ main = do
     ["remotes"] -> do
       conf <- getFirConfig
       mapM_ printFlashPoint $ flashPoints conf
+    ("splint":comms) -> callSplint comms
     _ -> do
       putStrLn "help (documentation and libraries)"
       putStrLn "build [<file>]"

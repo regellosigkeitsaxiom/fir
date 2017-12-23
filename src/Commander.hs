@@ -97,6 +97,12 @@ buildBIN file =
     , "./build/" ++ getBaseName file ++ ".bin"
     ]
 
+callSplint :: [ String ] --File name and/or other options
+           -> IO ()
+callSplint comms = do
+  includes <- map ("-I"++) <$> includeFlag
+  callProcess "splint" $ includes ++ comms
+
 findMCU :: DotFir -> [ MCU ] -> Maybe MCU
 findMCU fir = find (\x -> fullname x == model fir )
 

@@ -1,0 +1,26 @@
+fullname: STM32L051R8
+core: M0+
+manuals:
+  reference:
+  - code: RM0377
+    file: RM0377.pdf
+    description: STM32L0x1 reference manual
+  datasheet:
+  - code: DM00108219
+    file: DM00108219.pdf
+    description: STM32L051x6 STM32L051x8 datasheet (no code)
+  other-documents: []
+  errata:
+  - code: DM00114897
+    file: DM00114897.pdf
+    description: STM32L051x6/8 device limitations
+linkers:
+- STM32L051R8Tx
+templates:
+- description: Empty project
+  location: zero
+help: Initial core MCU of ips3 nodes
+startup-code: startup_stm32l051xx.s
+cmsis:
+  - stm32l051xx.h
+define: STM32L051x8
