@@ -17,11 +17,14 @@ main = do
     ["init"] -> setter
     --["flash"] -> undefined
     --["all"] -> undefined
+    ("reset":rest) -> resetWrapper ( atMay rest 0 )
     ["help"] -> helpDoc
-    ("all":rest) ->
+    ("all":rest) -> do
       allWrapper ( atMay rest 0 )
-    ("flash":rest) ->
+      resetWrapper ( atMay rest 0 )
+    ("flash":rest) -> do
       flashWrapper ( atMay rest 0 ) ( atMay rest 1 )
+      resetWrapper ( atMay rest 0 )
     ["remotes"] -> do
       conf <- getFirConfig
       mapM_ printFlashPoint $ flashPoints conf

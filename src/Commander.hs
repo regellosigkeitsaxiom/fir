@@ -80,6 +80,7 @@ allFlags mcu info file = do
     [ "-T" ++ addDB db ( "linkers/" ++ linker info ++ ".ld" )] ++
     [ addDB db $ "startups/" ++ startup mcu ] ++
     [ "-o./build/" ++ getBaseName file ++ ".elf" ] ++
+    [ "-g" ] ++
     [ file ]
 
 getBaseName = encodeString . basename . decodeString
@@ -100,7 +101,7 @@ buildBIN file =
 callSplint :: [ String ] --File name and/or other options
            -> IO ()
 callSplint comms = do
-  includes <- map ("-I"++) <$> includeFlag
+  includes <- includeFlag
   callProcess "splint" $ includes ++ comms
 
 findMCU :: DotFir -> [ MCU ] -> Maybe MCU
@@ -169,6 +170,26 @@ allWrapper point = do
   info <- getFirConfig
   builder "main.c"
   flasher info point Nothing
+
+resetWrapper :: Maybe String -> IO ()
+resetWrapper point = do
+  info <- getFirConfig
+  resetter info point
+
+resetter :: FirConfig -> Maybe String -> IO ()
+resetter fc pointName = do
+  let que = (\p -> find (\x -> name x == p ) $ flashPoints fc ) =<< pointName
+  fp <- case que of
+    Nothing -> getFP $ flashPoints fc
+    Just fp -> return fp
+  case ssh fp of
+    Nothing -> callProcess ( fromMaybe "st-flash" $ command fp ) [ "reset" ]
+    Just sshe -> callProcess "ssh"
+      [ "-p" ++ port sshe
+      , "-i" ++ key sshe
+      , user sshe ++ "@" ++ address sshe
+      , fromMaybe "st-flash" ( command fp ) ++ " reset"
+      ]
 
 flashWrapper :: Maybe String -> Maybe String -> IO ()
 flashWrapper point file = do
