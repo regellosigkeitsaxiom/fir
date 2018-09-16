@@ -40,15 +40,14 @@ main = do
 
 printFlashPoint :: FlashPoint -> IO ()
 printFlashPoint fp = do
-  putStrLn $ "Name    | " ++ name fp
-  putStrLn $ "Path    | " ++ path fp
-  putStrLn $ "Command | " ++ fromMaybe "st-flash" ( command fp )
+  putStrLn $ "Name     | " ++ name fp
+  putStrLn $ "Path     | " ++ path fp
+  putStrLn $ "Command  | " ++ fromMaybe "st-flash" ( command fp )
   case ssh fp of
-    Nothing -> putStrLn "SSH     | NONE"
+    Nothing -> putStrLn "SSH      | NONE"
     Just s -> do
-      putStrLn   "SSH:"
-      putStrLn $ "Address | " ++ address s
-      putStrLn $ "User    | " ++ user s
-      putStrLn $ "Port    | " ++ port s
-      putStrLn $ "Key     | " ++ key s
+      putStrLn $ "ssh-Addr | " ++ address s
+      putStrLn $ "ssh-User | " ++ user s
+      putStrLn $ "ssh-Port | " ++ port s
+      putStrLn $ "ssh-Key  | " ++ key s
   putStrLn ""
