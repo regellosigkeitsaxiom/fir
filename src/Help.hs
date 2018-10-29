@@ -87,7 +87,9 @@ helpDoc = do
   home <- getHomeDirectory
   cfg <- withCurrentDirectory home $ decodeFileEither ".firrc.yaml"
   case cfg of
-    Left err -> error $ show err
+    Left err -> do
+      hPutStrLn stderr "Error in function helpDoc"
+      hPrint stderr err
     Right c -> callHelp help c
 
 callHelp :: HelpMe -> FirConfig -> IO ()

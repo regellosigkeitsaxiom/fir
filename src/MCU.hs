@@ -14,6 +14,7 @@ readOneMCU file = do
   x <- decodeEither <$> BS.readFile file
   case x of
     Left e -> do
+      hPutStrLn stderr "Error in function readOneMCU"
       hPutStrLn stderr e
       return Nothing
     Right m -> return m
